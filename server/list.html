@@ -1,0 +1,186 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta http-equiv="X-UA-Compatible" content="ie=edge" />
+    <title>最新警情</title>
+  </head>
+  <script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js"></script>
+  <script src="https://unpkg.com/axios/dist/axios.min.js"></script>
+  <body style='margin:0;'>
+    <div id="app" class="container">
+      <div class="head">警务后台管理系统</div>
+      <div class="body">
+        <div class="type-list">
+          <div v-for="(v,i) in types"  :key="i" :class="{selected: i === selectedTypeIndex}" @click='changeType(i)'>{{ v.type }}</div>
+        </div>
+        <div class="case-list">
+          <div v-for="(v,i) in list" :key="i" @click="nav('detail',v.MSID)">
+            <div class="title">{{ v.title }}</div>
+            <div class="text">{{ v.detail }}</div>
+            <div class="foot">
+              <div class="type">{{ v.type }}</div>
+              <div class="time">{{ v.time }}</div>
+            </div>
+          </div>
+          <div v-if="list.length===0" class="nodata">暂无内容</div>
+        </div>
+      </div>
+      <div class="releaseNews" @click="nav('release')">发布<br>新闻</div>
+    </div>
+  </body>
+  <script>
+    const app = new Vue({
+      el: '#app',
+      data: {
+        list: [],
+        types: [],
+        selectedTypeIndex: 0,
+        rootUrl: 'http://47.92.247.229:3000/'
+      },
+      methods: {
+        changeType(i){
+          this.selectedTypeIndex = i
+          axios
+            .get(`${this.rootUrl}listAll?TPID=${this.types[i].TPID}`)
+            .then(res => {
+              console.log(res)
+              this.list = res.data
+              console.log(this.list)
+            })
+            .catch(err => {
+              console.log(err)
+            })
+        },
+        nav(page,id) {
+          window.open(`./${page}.html?MSID=${id}`)
+        }
+      },
+      mounted() {
+        axios
+          .get(`${this.rootUrl}listAll?TPID=1`)
+          .then(res => {
+            console.log(res)
+            this.list = res.data
+            console.log(this.list)
+          })
+          .catch(err => {
+            console.log(err)
+          })
+        axios
+          .get(`${this.rootUrl}allTypes`)
+          .then(res => {
+            console.log(res)
+            this.types = [ {type:'紧急事件',TPID: 1}, {type:'全部',TPID: -1}, ...res.data, {type:'已受理',TPID: -2}]
+            console.log(this.types)
+          })
+          .catch(err => {
+            console.log(err)
+          })
+      }
+    })
+  </script>
+  <style>
+    .container {
+      position: absolute;
+      height: 100%;
+      width: 100%;
+    }
+    .head {
+      width: 100%;
+      height: 100px;
+      text-align: center;
+      font: bold 40px/100px not specified;
+      background: rgba(45,45,45,.98);
+      color: white;
+    }
+    .body {
+      display: flex;
+      min-height: calc(100% - 100px);
+    }
+    .type-list {
+      width: 10%;
+      display: flex;
+      flex-direction: column;
+      background: #333;
+      color: white;
+    }
+    .type-list div{
+      height: 60px;
+      font: 20px/60px not specified;
+      text-align: center;
+    }
+    .type-list div:hover{
+      opacity:.5;
+    }
+    .selected{
+      background: #CCC;
+      color: black;
+    }
+    .case-list {
+      position: relative;
+      width: 90%;
+      background: #FAFAFA;
+    }
+    .case-list >div{
+      padding: 26px 40px;
+      border-bottom: 1px solid #eee;
+    }
+    .title {
+      font: 600 23px/30px not specified;
+      padding-bottom: 10px;
+    }
+    .text {
+      overflow: hidden;
+      text-overflow: ellipsis;
+      display: -webkit-box;
+      -webkit-line-clamp: 3;
+      -webkit-box-orient: vertical;
+      font: 20px/30px not specified;
+    }
+    .foot {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding-top: 15px;
+      font: 20px/30px not specified;
+      color: grey;
+    }
+    .releaseNews{
+      position: absolute;
+      bottom: 5%;
+      right: 5%;
+      height: 100px;
+      width: 100px;
+      border-radius: 50%;
+      background: #007;
+      color:white;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      box-shadow:0 0 10px black;
+      font: 20px/30px not specified;
+    }
+    .nav0 {
+      background: red;
+    }
+    .nodata {
+      position: absolute;
+      height: calc(100% - 100px);
+      width: 90%;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      flex-direction: column;
+      font: 35px/35px;
+      color: #555;
+      border: 0 !important;
+    }
+    .nodata img {
+      height: 200px;
+      width: 200px;
+      margin-bottom: 20px;
+    }
+  </style>
+</html>

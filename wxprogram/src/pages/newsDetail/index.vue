@@ -1,0 +1,58 @@
+<template>
+<div class='container'>
+<div class='title'>{{detailObj.title}}</div>
+<div class='time'>{{detailObj.time}}</div>
+<img :src='rootUrl + detailObj.img' mode='widthFix'>
+<div class='detail'>{{detailObj.detail}}</div>
+<div style='height: 60rpx; width: 100%;' />
+</div>
+</template>
+
+<script>
+export default {
+  data () {
+    return {
+      detailObj: {}
+    }
+  },
+  methods: {
+    getDetail(){
+      wx.showLoading({title:'正在加载'})
+      wx.request({
+        url: this.rootUrl + 'newsDetail',
+        data: { NSID: this.$root.$mp.query.NSID },
+        success: res => {
+          this.detailObj = res.data[0]
+          wx.hideLoading()
+        }
+      })
+    }
+  },
+  onLoad(){
+    this.getDetail()
+  },
+  onUnload(){
+    this.detailObj = {}
+  }
+}
+</script>
+
+<style lang="stylus" scoped>
+.container
+  height 100%
+  width 90%
+  padding 0 5%
+  .title
+    font bold 42rpx/70rpx !specified
+    margin 30rpx 0
+  .time
+    font 30rpx/30rpx !specified
+    color grey
+  img
+    width 100%
+    margin 30rpx 0
+  .detail
+    font 32rpx/40rpx !specified
+    text-align justify
+</style>
+

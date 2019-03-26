@@ -1,0 +1,189 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta http-equiv="X-UA-Compatible" content="ie=edge" />
+    <title>警情详情</title>
+  </head>
+  <script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js"></script>
+  <script src="https://unpkg.com/axios/dist/axios.min.js"></script>
+  <body style="margin:0;">
+    <div id="app" class="container">
+      <div class="title">{{ detailObj.title }}</div>
+
+      <div v-if="detailObj.voiceFile" class="para-title">
+        <div></div>
+        录音文件
+      </div>
+      <audio
+        v-if="detailObj.voiceFile"
+        :src="rootUrl + detailObj.voiceFile"
+        controls="controls"
+      ></audio>
+      <div class="para-title">
+        <div></div>
+        警情概要
+      </div>
+      <div class="sub-info">
+        <div>案件类型：</div>
+        <div>{{ detailObj.type }}</div>
+      </div>
+      <div class="sub-info">
+        <div>事发地点：</div>
+        <div>{{ detailObj.location }}</div>
+      </div>
+      <div class="sub-info">
+        <div>报警时间：</div>
+        <div>{{ detailObj.time }}</div>
+      </div>
+      <div class="para-title">
+        <div></div>
+        报警人信息
+      </div>
+      <div class="sub-info">
+        <div>姓名：</div>
+        <div>{{ detailObj.name }}</div>
+      </div>
+      <div class="sub-info">
+        <div>手机号：</div>
+        <div>{{ detailObj.phone }}</div>
+      </div>
+      <div class="sub-info">
+        <div>身份证号：</div>
+        <div>{{ detailObj.idcard }}</div>
+      </div>
+      <div class="para-title">
+        <div></div>
+        案件详情
+      </div>
+      <div class="detail">{{ detailObj.detail }}</div>
+      <div v-if="detailObj.imgFile" class="para-title">
+        <div></div>
+        警情图片
+      </div>
+      <img
+        v-for="(v,i) in detailObj.imgFile"
+        :key="i"
+        :src="rootUrl + v"
+        mode="widthFix"
+      />
+      <button v-if='!detailObj.handled' @click="handle">受理案件</button>
+      <div style="height: 60px; width: 100%;"></div>
+    </div>
+  </body>
+
+  <script>
+    let MSID
+    const app = new Vue({
+      el: '#app',
+      data: {
+        detailObj: {},
+        rootUrl: 'http://47.92.247.229:3000/'
+      },
+      methods:{
+        handle(){
+          axios
+            .post(`${this.rootUrl}handle`,{
+              MSID,
+              password: 'police'
+            })
+            .then(res => {
+              if(res.data === 'ok')
+                alert('受理成功')
+                this.detailObj.handled = 1
+            })
+            .catch(err => {
+              console.log(err)
+            })
+        }
+      },
+      mounted() {
+        MSID = window.location.search.replace('?MSID=', '')
+        axios
+          .get(`${this.rootUrl}caseDetail`,{ params: {
+            MSID,
+            full: true
+          }})
+          .then(res => {
+            console.log('sss', res)
+            this.detailObj = res.data
+          })
+          .catch(err => {
+            console.log(err)
+          })
+      }
+    })
+  </script>
+  <style>
+    .container {
+      height: 100%;
+      width: 90%;
+      padding: 0 5%;
+    }
+    .container .para-title {
+      display: flex;
+      align-items: center;
+      font: bold 32px/100px false;
+      color: #424242;
+    }
+    .container .para-title div {
+      margin-right: 20px;
+      height: 45px;
+      width: 10px;
+      background: #011458;
+    }
+    .container .sub-info {
+      font: 30px/50px false;
+      display: flex;
+      align-items: flex-start;
+    }
+    .container .sub-info > div:nth-child(1) {
+      color: #808080;
+      width: 25%;
+    }
+    .container .sub-info > .div:nth-child(2) {
+      width: 75%;
+    }
+    .container .title {
+      font: bold 42px/70px false;
+      margin: 30px 0;
+    }
+    .container .info {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font: 30px/50px false;
+      color: #808080;
+    }
+    .container .detail {
+      margin: 10px 0;
+      font: 32px/40px false;
+      text-align: justify;
+    }
+    .container .location {
+      font: 30px/80px false;
+      color: #e64340;
+    }
+    .container img {
+      margin: 0 20px;
+    }
+    button {
+      display: block;
+      height: 100px;
+      width: 250px;
+      font: 40px/100px not specified;
+      background: red;
+      border-radius: 10px;
+      margin-left: calc(50% - 125px);
+      margin-top: 50px;
+      text-align: center;
+      color: white;
+      border: 0;
+    }
+    button:hover {
+      border: 0;
+      opacity: 0.5;
+    }
+  </style>
+</html>

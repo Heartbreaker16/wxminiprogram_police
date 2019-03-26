@@ -1,0 +1,21 @@
+{
+  "pages": [
+    "pages/homepage/main",
+    "pages/login/main",
+    "pages/commit/main",
+    "pages/history/main",
+    "pages/caseDetail/main",
+    "pages/news/main",
+    "pages/newsDetail/main"
+  ],
+  "window": {
+    "backgroundTextStyle": "light",
+    "navigationBarBackgroundColor": "#011458",
+    "navigationBarTextStyle": "white"
+  },
+  "permission": {
+    "scope.userLocation": {
+      "desc": "定位后您可以再次编辑位置"
+    }
+  }
+}
