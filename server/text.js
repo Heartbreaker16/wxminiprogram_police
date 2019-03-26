@@ -35,14 +35,10 @@ const request = require('request')
 // return
 request.get(
   {
-    url:
-      'https://api.weixin.qq.com/cgi-bin/token?grant_type=client_credential&appid=wx664c5691c59f352a&secret=59ae4b1097a756a583e7e2b09da36411'
-    // form: {
-    //     MSID: 4
-    // }
+    url:'https://api.weixin.qq.com/cgi-bin/token?grant_type=client_credential&appid=wx664c5691c59f352a&secret=59ae4b1097a756a583e7e2b09da36411'
   },
-  (err, httpResponse, body) => {
-    console.log(JSON.parse(body))
+  (err, res, body) => {
+    if(err) throw err
     request.post(
       {
         url: `https://api.weixin.qq.com/cgi-bin/message/wxopen/template/send?access_token=${
@@ -76,6 +72,5 @@ request.get(
         console.log(res)
       }
     )
-    // console.log(body)
   }
 )

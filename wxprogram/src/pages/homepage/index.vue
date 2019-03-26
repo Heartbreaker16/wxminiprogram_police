@@ -63,6 +63,7 @@ export default {
               success: res => {
                 if(res.confirm){
                   wx.removeStorageSync('userInfo')
+                  wx.removeStorageSync('hasReadWarning')
                   wx.redirectTo({url: '../login/main'})
                 }
               }
