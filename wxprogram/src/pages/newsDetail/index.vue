@@ -3,7 +3,7 @@
 <div class='title'>{{detailObj.title}}</div>
 <div class='time'>{{detailObj.time}}</div>
 <img :src='rootUrl + detailObj.img' mode='widthFix'>
-<div class='detail'>{{detailObj.detail}}</div>
+<text class='detail'>{{detailObj.detail}}</text>
 <div style='height: 60rpx; width: 100%;' />
 </div>
 </template>
