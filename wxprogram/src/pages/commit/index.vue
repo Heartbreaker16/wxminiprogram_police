@@ -4,7 +4,7 @@
 <input v-if='regular' name='title' v-model='title' placeholder='请简短概括警情, 不超过20字' maxlength=20 />
 <div class='subtitle'>事发地点</div>
 <div class='location'>
-<input :focus='locationFocus' name='location' v-model='location' 
+<textarea :focus='locationFocus' name='location' v-model='location' auto-height
   placeholder='请输入您的详细位置 (点击右侧图标直接获取)' maxlength=60 @focus='locationFocus=true' @blur='locationFocus=false'/>
 <img src='/static/images/location.png' @tap='getLocation'/>
 </div>
@@ -91,7 +91,7 @@ export default {
             },
             success: res1 => {
               console.log(res1)
-              this.location = res1.data.result.formatted_address
+              this.location = res1.data.result.sematic_description
               this.locationFocus = true
               wx.hideLoading()
             }
@@ -412,8 +412,10 @@ export default {
   .location
     display flex
     align-items center
-    input
+    textarea
       width calc(100% - 110rpx)
+      line-height 30rpx
+      margin 30rpx 20rpx
     img
       width 54rpx
       height 54rpx
