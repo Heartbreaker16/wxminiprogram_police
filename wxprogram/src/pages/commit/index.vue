@@ -26,7 +26,7 @@
 <div class='subtitle'>添加图片 (选填)</div>
 <div class='img-box'>
   <div class='image' v-for='(v,i) in imgfiles' :key='i' @tap='previewImg(i)'>
-    <img :src='v'><div @tap.stop='cancelImg(i)'><img src='/static/images/cancel.png'></div>
+    <img :src='v' mode='aspectFill'><div @tap.stop='cancelImg(i)'><img src='/static/images/cancel.png'></div>
   </div>
   <div hover-class='fade' @tap='chooseImage'><img class='upload' src='/static/images/upload.png'></div>
 </div>

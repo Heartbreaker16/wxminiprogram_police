@@ -2,7 +2,7 @@
 <div class='container'>
 <div class='title'>{{detailObj.title}}</div>
 <div class='time'>{{detailObj.time}}</div>
-<img :src='rootUrl + detailObj.img' mode='widthFix'>
+<img v-show='imgHide' :src='rootUrl + detailObj.img' mode='widthFix' @load='imgHide=true'>
 <text class='detail'>{{detailObj.detail}}</text>
 <div style='height: 60rpx; width: 100%;' />
 </div>
@@ -12,7 +12,8 @@
 export default {
   data () {
     return {
-      detailObj: {}
+      detailObj: {},
+      imgHide: false
     }
   },
   methods: {
@@ -33,6 +34,7 @@ export default {
   },
   onUnload(){
     this.detailObj = {}
+    this.imgHide = false
   }
 }
 </script>

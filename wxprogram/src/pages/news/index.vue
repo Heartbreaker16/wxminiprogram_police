@@ -5,7 +5,7 @@
   <div class='title'>{{v.title}}</div>
   <div class='time'>{{v.time}}</div>
 </div>
-<img :src='rootUrl + v.img'>
+<img :src='rootUrl + v.img' mode='aspectFill' lazy-load>
 </navigator>
 <div v-if='news.length===0 && hasLoad' class='nodata'><img src='/static/images/empty.png'>暂无内容</div>
 </div>
