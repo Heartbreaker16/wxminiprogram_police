@@ -7,14 +7,15 @@ App.mpType = 'app'
 Vue.mixin({
   data() {
     return {
-      rootUrl: 'http://47.92.247.229/'
+      rootUrl: 'http://101.132.123.189/'
+      // rootUrl: 'http://47.92.247.229/'
     }
   }
 })
 
 const app = new Vue(App)
 app.$mount()
-wx.hideTabBar()
+
 wx.setEnableDebug({
   enableDebug: true
 })

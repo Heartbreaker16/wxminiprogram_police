@@ -17,5 +17,6 @@
     "scope.userLocation": {
       "desc": "定位后您可以再次编辑位置"
     }
-  }
+  },
+  "debug": true
 }

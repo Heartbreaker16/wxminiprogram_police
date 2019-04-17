@@ -33,7 +33,6 @@
 </template>
 
 <script>
-let isiOS
 export default {
   data () {
     return {
@@ -54,7 +53,7 @@ export default {
     },
     logOut(){
       wx.showActionSheet({
-        itemList: isiOS ? ['退出登录'] : ['退出登录','取消'],
+        itemList: ['退出登录'],
         success: res => {
           if(res.tapIndex === 0){
             wx.showModal({
@@ -77,13 +76,9 @@ export default {
     const userInfo = wx.getStorageSync('userInfo')
     if(userInfo){
       this.name = userInfo.name
-      if(!wx.getStorageSync('hasReadWarning')){
+      if(!wx.getStorageSync('hasReadWarning'))
         this.showWarning = true
-      }
-    }else{
-      wx.redirectTo({url: '../login/main'})
-    }
-    isiOS = new RegExp(/^iOS/).test(wx.getSystemInfoSync().system)
+    }else wx.redirectTo({url: '../login/main'})
   },
   onShow(){
     this.showMask = false
