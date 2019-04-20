@@ -238,19 +238,17 @@ app.post('/handle', (req, response) => {
         request.get(
           {
             url:
-              'https://api.weixin.qq.com/cgi-bin/token?grant_type=client_credential&appid=wx664c5691c59f352a&secret=59ae4b1097a756a583e7e2b09da36411'
+              'https://api.weixin.qq.com/cgi-bin/token?grant_type=client_credential&appid=wx4510a9a8853fa1c9&secret=d758a69f9cd9baf36a5e52c60f37ec3c'
           },
           (err, res, body) => {
             if (err) throw err
             request.post(
               {
-                url: `https://api.weixin.qq.com/cgi-bin/message/wxopen/template/send?access_token=${
-                  JSON.parse(body).access_token
-                }`,
+                url: `https://api.weixin.qq.com/cgi-bin/message/wxopen/template/send?access_token=${JSON.parse(body).access_token}`,
                 header: { 'content-type': 'application/json' },
                 json: {
                   touser: row[0].openid,
-                  template_id: '8BrzJ-brWgY6odiMqWSURY2USluCpdTyt6PnC1bX-r8',
+                  template_id: '45VwksAgRmg5OGIfIZWyYFN0BLHoow7HnarNxKVA5PQ',
                   form_id: row[0].form_id,
                   data: {
                     keyword1: {

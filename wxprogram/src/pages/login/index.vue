@@ -7,9 +7,10 @@
 <input type='number' v-if='register' v-model='phone' name='phone' placeholder='请输入您的手机号' maxlength=11>
 <input type='idcard' v-else v-model='account' name='account' placeholder='请输入您的手机号或身份证号' maxlength=18>
 <input type='password' v-model='password' name='password' placeholder='请输入您的密码' maxlength=20>
+<input type='password' v-if='register' v-model='password_confirm' name='password_confirm' placeholder='请确认您的密码' maxlength=20>
 <button :disabled='!notEmpty || submitting' type='primary' form-type='submit' class='button'>{{register ? '注册' : '登录'}}</button>
 <div class='text-bottom'>
-<span v-if='!submitting' class='shift' @tap='shift'>{{register ? '登录账号' : '注册账号'}}</span>
+<span v-if='!submitting' class='shift' @tap='clearInputs();shiftMode()'>{{register ? '登录账号' : '注册账号'}}</span>
 <span class='phone-call' @tap='makePhoneCall'>电话报警</span>
 
 </div>
@@ -28,6 +29,7 @@ export default {
       phone: '',
       account: '',
       password: '',
+      password_confirm: '',
       register: true,
       submitting: false,
       error: ''
@@ -52,16 +54,17 @@ export default {
         phoneNumber: '110'
       })
     },
-    shift(change = false){
+    clearInputs(){
       this.name = ''
       this.idcard = ''
       this.phone = ''
       this.account = ''
       this.password = ''
-      if(change){
-        this.register = !this.register
-        wx.setNavigationBarTitle({title: this.register ? '注册' : '登录'})
-      }
+      this.password_confirm = ''
+    },
+    shiftMode(){
+      this.register = !this.register
+      wx.setNavigationBarTitle({title: this.register ? '注册' : '登录'})
     },
     getOpenID(){
       return new Promise( resolve => {
@@ -71,20 +74,14 @@ export default {
           wx.login({
             success: res => {
               wx.request({
-                url: 'http://47.104.11.101:8080/lawyerApp//Login/getOpenid',
+                url: 'https://api.weixin.qq.com/sns/jscode2session',
                 data: {
-                  code: res.code,
-                  app_id: 'wx664c5691c59f352a',
-                  secret: '59ae4b1097a756a583e7e2b09da36411'
-                },
-                method: 'POST',
-                header: {
-                  //请求头
-                  'X-Requested-With': 'XMLHttpRequest',
-                  'Content-Type': 'application/x-www-form-urlencoded'
+                  js_code: res.code,
+                  appid: 'wx4510a9a8853fa1c9',
+                  secret: 'd758a69f9cd9baf36a5e52c60f37ec3c',
+                  grant_type: 'authorization_code'
                 },
                 success: e => {
-                  console.log(e)
                   resolve(e.data.openid)
                 },
                 fail: err => {
@@ -105,6 +102,11 @@ export default {
         wx.showToast({title:'请输入正确的身份证号', icon:'none'})
         return
       }
+      if(this.register && input.password !== input.password_confirm){
+        wx.showToast({title:'两次密码不一致',icon:'none'})
+        this.password_confirm = ''
+        return
+      }
       this.submitting = true
       wx.showLoading({title: `正在${this.register ? '注册' : '登录'}`})
       this.getOpenID().then( openid => {
@@ -123,13 +125,15 @@ export default {
             console.log(res)
             this.error = JSON.stringify(res)
             wx.hideLoading()
-            if(this.register){
-              this.shift(res.data === '注册成功')
+            if(this.register){ //注册
+              this.clearInputs()
+              if(res.data === '注册成功')
+                this.shiftMode()
               wx.showToast({title:res.data, icon:'none'})
-            } else if (typeof res.data === 'string'){
-              this.shift()
+            } else if (typeof res.data === 'string'){ //登录失败
+              this.clearInputs()
               wx.showToast({title:res.data, icon:'none'})
-            } else {
+            } else { // 登录成功
               wx.setStorageSync('userInfo', res.data)
               wx.redirectTo({url: '../homepage/main'})
             }
@@ -144,11 +148,7 @@ export default {
     }
   },
   onUnload(){
-    this.name = ''
-    this.idcard = ''
-    this.phone = ''
-    this.account = ''
-    this.password = ''
+    this.clearInputs()
     this.register = true
   }
 }
