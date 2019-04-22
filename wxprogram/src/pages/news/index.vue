@@ -64,7 +64,7 @@ export default {
         font 35rpx/40rpx !specified
       .time
         height 30rpx
-        font 26rpx/30rpx !specified
+        font 29rpx/30rpx !specified
         color grey
     img 
       width 200rpx

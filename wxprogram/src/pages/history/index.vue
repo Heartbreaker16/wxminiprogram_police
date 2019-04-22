@@ -57,7 +57,7 @@ export default {
     border-bottom 1rpx solid #EEE
     .title
       font bold 32rpx/50rpx !specified
-      padding-bottom 10rpx
+      padding-bottom 18rpx
     .text
       overflow hidden
       text-overflow ellipsis
@@ -70,11 +70,11 @@ export default {
       justify-content space-between
       align-items center
       padding-top 22rpx
-      font 26rpx/38rpx !specified
+      font 29rpx/38rpx !specified
       color grey
       .handle
-        font 24rpx/38rpx !specified
-        padding 0 10rpx
+        font 28rpx/38rpx !specified
+        padding 0 12rpx
         background #09bb07
         border-radius 6rpx
         color white

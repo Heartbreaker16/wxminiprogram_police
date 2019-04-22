@@ -449,8 +449,7 @@ export default {
         position absolute
         top 0
         right 0
-        opacity .5
-        background black
+        background rgba(0,0,0,.5)
         height 20%
         width 20%
         border-radius 0 0 0 10rpx

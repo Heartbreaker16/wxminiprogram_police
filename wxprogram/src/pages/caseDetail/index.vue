@@ -4,13 +4,13 @@
 <div v-else class='title' style='color: #E64340'>紧急报警</div>
 
 <div v-if='detailObj.voiceFile' class='para-title'><div/>录音文件</div>
-<div v-if='detailObj.voiceFile' class='voice' @tap='playOrStop'>
+<!-- <div v-if='detailObj.voiceFile' class='voice' @tap='playOrStop'>
   <div v-if='playing' class='stop'/>
   <div v-else class='play'/>
   <div v-if='playing' class='progress' :style="['width:'+progress+'%;']" />
   <div v-else class='text'>点击播放录音</div>
-</div>
-
+</div> -->
+<audio v-if='detailObj.voiceFile' :src='rootUrl + detailObj.voiceFile' name='录音文件' author=' ' controls></audio>
 <div class='para-title'><div/>警情概要</div>
 <!-- <div class='sub-info'><div>姓名：</div><div>{{detailObj.name}}</div></div>
 <div class='sub-info'><div>手机号：</div><div>{{detailObj.phone}}</div></div>
@@ -28,10 +28,10 @@
 </template>
 
 <script>
-const innerAudioContext = wx.createInnerAudioContext()
-let currentTime = 0
-let duration = 0
-let interval = {}
+// const innerAudioContext = wx.createInnerAudioContext()
+// let currentTime = 0
+// let duration = 0
+// let interval = {}
 export default {
   data () {
     return {
@@ -43,8 +43,8 @@ export default {
       // detail: '',
       // voiceFile: '',
       // imgFile: [],
-      playing: false,
-      progress: 0,
+      // playing: false,
+      // progress: 0,
     }
   },
   methods: {
@@ -55,59 +55,59 @@ export default {
         data: { MSID: this.$root.$mp.query.MSID },
         success: res => {
           this.detailObj = res.data
-          duration = res.data.duration
-          innerAudioContext.src = this.rootUrl + res.data.voiceFile
+          // duration = res.data.duration
+          // innerAudioContext.src = this.rootUrl + res.data.voiceFile
           wx.hideLoading()
         }
       })
     },
-    playOrStop() {
-      if(this.playing){
-        innerAudioContext.stop()
-        clearInterval(interval)
-        this.progress = 0
-        currentTime = 0
-      }else{
-        innerAudioContext.play()
-      }
-    },
+    // playOrStop() {
+    //   if(this.playing){
+    //     innerAudioContext.stop()
+    //     clearInterval(interval)
+    //     this.progress = 0
+    //     currentTime = 0
+    //   }else{
+    //     innerAudioContext.play()
+    //   }
+    // },
   },
   onLoad(){
-    clearInterval(interval)
-    this.progress = 0
-    currentTime = 0
+    // clearInterval(interval)
+    // this.progress = 0
+    // currentTime = 0
     this.getDetail()
-    innerAudioContext.onStop(() => {
-      this.playing = false
-      clearInterval(interval)
-      this.progress = 0
-    })
-    innerAudioContext.onPlay(() => {
-      this.playing = true
-      currentTime = 0
-      interval = setInterval(() => {
-        const progress = currentTime / duration * 100
-        this.progress = progress > 100 ? 100 : progress
-        currentTime += 100
-      }, 100)
-    })
-    innerAudioContext.onEnded(() => {
-      this.playing = false
-      clearInterval(interval)
-      this.progress = 0
-    })
+    // innerAudioContext.onStop(() => {
+    //   this.playing = false
+    //   clearInterval(interval)
+    //   this.progress = 0
+    // })
+    // innerAudioContext.onPlay(() => {
+    //   this.playing = true
+    //   currentTime = 0
+    //   interval = setInterval(() => {
+    //     const progress = currentTime / duration * 100
+    //     this.progress = progress > 100 ? 100 : progress
+    //     currentTime += 100
+    //   }, 100)
+    // })
+    // innerAudioContext.onEnded(() => {
+    //   this.playing = false
+    //   clearInterval(interval)
+    //   this.progress = 0
+    // })
   },
-  onHide(){
-    innerAudioContext.stop()
-    clearInterval(interval)
-    this.progress = 0
-    currentTime = 0
-  },
+  // onHide(){
+  //   innerAudioContext.stop()
+  //   clearInterval(interval)
+  //   this.progress = 0
+  //   currentTime = 0
+  // },
   onUnload(){
-    innerAudioContext.stop()
-    clearInterval(interval)
-    this.progress = 0
-    currentTime = 0
+    // innerAudioContext.stop()
+    // clearInterval(interval)
+    // this.progress = 0
+    // currentTime = 0
     this.detailObj = {}
   }
 }
@@ -147,6 +147,9 @@ export default {
     align-items center
     font 30rpx/50rpx !specified
     color grey
+  audio
+    height 90rpx
+    width 100%
   .voice
     height 90rpx
     width 100%
