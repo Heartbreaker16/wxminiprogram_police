@@ -388,7 +388,7 @@ app.get('/newsDetail', (req, res) => {
   connection.query(SQL, (err, row) => {
     if (err) throw err
     row.forEach(v => {
-      v.detail = v.detail.replace(/[\n]+/g, '\n')
+      v.detail = v.detail.replace(/[\n]+/g, '<br>')
       v.time = correctTime(v.time, 'full')
       v.img = `/news/${v.NSID}.${v.format}`
     })

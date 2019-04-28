@@ -3,7 +3,7 @@
 <div class='title'>{{detailObj.title}}</div>
 <div class='time'>{{detailObj.time}}</div>
 <img v-show='imgHide' :src='rootUrl + detailObj.img' mode='widthFix' @load='imgHide=true'>
-<text class='detail'>{{detailObj.detail}}</text>
+<rich-text class='detail' :nodes='detailObj.detail' space='emsp'/>
 <div style='height: 60rpx; width: 100%;' />
 </div>
 </template>
