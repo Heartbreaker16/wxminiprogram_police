@@ -54,7 +54,7 @@ export default {
     width 100%
     margin 30rpx 0
   .detail
-    font 32rpx/40rpx !specified
+    font 33rpx/52rpx !specified
     text-align justify
 </style>
 
