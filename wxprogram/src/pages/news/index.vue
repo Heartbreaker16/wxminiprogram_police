@@ -23,7 +23,7 @@ export default {
     getNews(){
       wx.showLoading({title: '正在加载'})
       wx.request({
-        url: this.rootUrl + 'news',
+        url: this.rootUrl + 'allNews',
         success: res => {
           this.news = res.data
           this.hasLoad = true

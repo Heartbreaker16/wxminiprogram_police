@@ -10,6 +10,7 @@
   </head>
   <script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.min.js"></script>
   <script src="https://unpkg.com/axios/dist/axios.min.js"></script>
+  <script src="basic.js"></script>
   <body style="margin:0;">
     <div id="app" class="container">
       <div class="title">{{ detailObj.title }}</div>
@@ -81,12 +82,12 @@
       el: '#app',
       data: {
         detailObj: {},
-        rootUrl: 'http://101.132.123.189/'
+        rootUrl:''
       },
       methods:{
         handle(){
           axios
-            .post(`${this.rootUrl}handle`,{
+            .post(`${RootUrl}handle`,{
               MSID,
               password: 'police'
             })
@@ -101,9 +102,10 @@
         }
       },
       mounted() {
+        this.rootUrl = RootUrl
         MSID = window.location.search.replace('?MSID=', '')
         axios
-          .get(`${this.rootUrl}caseDetail`,{ params: {
+          .get(`${RootUrl}caseDetail`,{ params: {
             MSID,
             full: true
           }})

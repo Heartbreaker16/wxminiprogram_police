@@ -90,13 +90,6 @@ const upload = multer({ storage })
 const bodyParser = require('body-parser')
 
 const app = express()
-app.all('/caseDetail', (req, res, next) => {
-  res.header('Access-Control-Allow-Origin', '*')
-  res.header('Access-Control-Allow-Methods', 'PUT, GET, POST, DELETE, OPTIONS')
-  res.header('Access-Control-Allow-Headers', 'X-Requested-With')
-  res.header('Access-Control-Allow-Headers', 'Content-Type')
-  next()
-})
 app.use(bodyParser.json())
 app.use(bodyParser.urlencoded({ extended: false }))
 app.use(express.static(FilePath))
@@ -139,8 +132,6 @@ app.post('/login', (req, res) => {
   const connection = mysql.createConnection(connectSQLConfig)
   connection.connect()
   const user = req.body
-  console.log('cgdycvdycbdyyv', user)
-  console.log(user)
   const SQL = `
     SELECT name, USID
     FROM users
@@ -154,6 +145,17 @@ app.post('/login', (req, res) => {
     else res.send('账户或密码错误')
   })
   connection.end()
+})
+app.post('/adminLogin', (req, res) => {
+  const connection = mysql.createConnection(connectSQLConfig)
+  connection.connect()
+  const SQL = 'SELECT * FROM admin_password'
+  connection.query(SQL, (err, row) => {
+    if (err) throw err
+    if(row[0].password === req.body.password) res.send('ok')
+    else res.send('deny')
+    connection.end()
+  })
 })
 app.post('/addMsg', (req, res) => {
   const connection = mysql.createConnection(connectSQLConfig)
@@ -357,7 +359,20 @@ app.post('/addNews', (req, res) => {
 app.post('/addNewsImg', upload.single('news'), (req, res) => {
   res.send('ok')
 })
-app.get('/news', (req, res) => {
+app.get('/deleteNews', (req, res) => {
+  const connection = mysql.createConnection(connectSQLConfig)
+  connection.connect()
+  const SQL = `
+    DELETE FROM news
+    WHERE NSID = ${req.query.NSID}
+  `
+  connection.query(SQL, (err, row) => {
+    if (err) throw err
+    res.send('ok')
+    connection.end()
+  })
+})
+app.get('/allNews', (req, res) => {
   const connection = mysql.createConnection(connectSQLConfig)
   connection.connect()
 

@@ -10,6 +10,7 @@
   </head>
   <script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.min.js"></script>
   <script src="https://unpkg.com/axios/dist/axios.min.js"></script>
+  <script src="http://101.132.123.189/html/basic.js"></script>
   <body style="margin:0;">
     <div id="app" class="container">
       <div class="head">警务后台管理系统</div>
@@ -36,7 +37,13 @@
           <div v-if="list.length===0" class="nodata">暂无内容</div>
         </div>
       </div>
-      <div class="releaseNews" @click="nav('release')">发布<br />新闻</div>
+      <div class="releaseNews" @click="nav('news_list')">新闻<br />管理</div>
+      <div class='blackMask' v-if='!login'>
+        <div>
+          <input type='password' placeholder="请输入后台管理密码" v-model='password'>
+          <button @click='_login'>登录</button>
+        </div>
+      </div>
     </div>
   </body>
   <script>
@@ -46,13 +53,14 @@
         list: [],
         types: [],
         selectedTypeIndex: 0,
-        rootUrl: 'http://101.132.123.189/'
+        login: true,
+        password:''
       },
       methods: {
         changeType(i) {
           this.selectedTypeIndex = i
           axios
-            .get(`${this.rootUrl}listAll?TPID=${this.types[i].TPID}`)
+            .get(`${RootUrl}listAll?TPID=${this.types[i].TPID}`)
             .then(res => {
               console.log(res)
               this.list = res.data
@@ -63,12 +71,35 @@
             })
         },
         nav(page, id) {
-          window.open(`${this.rootUrl}/html/${page}.html?MSID=${id}`)
+          window.open(`${RootUrl}/html/${page}.html?MSID=${id}`)
+        },
+        _login(){
+          axios
+            .post(`${RootUrl}adminLogin`,{password: this.password})
+            .then(res => {
+              if(res.data === 'ok') {
+                this.login = true
+                localStorage['lastLogin'] = new Date().getTime()
+                console.log(localStorage)
+              } else {
+                this.login = false
+                alert('登录失败')
+              }
+              this.password = ''
+            })
+            .catch(err => {
+              console.log(err)
+            })
+        },
+        checkLogin(){
+          console.log(localStorage['lastLogin'],(new Date().getTime() - localStorage['lastLogin'] < 3*60*1000))
+          this.login = localStorage['lastLogin'] && (new Date().getTime() - localStorage['lastLogin'] < 3*60*1000)
         }
       },
       mounted() {
+        this.checkLogin()
         axios
-          .get(`${this.rootUrl}listAll?TPID=1`)
+          .get(`${RootUrl}listAll?TPID=1`)
           .then(res => {
             console.log(res)
             this.list = res.data
@@ -78,7 +109,7 @@
             console.log(err)
           })
         axios
-          .get(`${this.rootUrl}allTypes`)
+          .get(`${RootUrl}allTypes`)
           .then(res => {
             console.log(res)
             this.types = [
@@ -162,7 +193,7 @@
       color: grey;
     }
     .releaseNews {
-      position: absolute;
+      position: fixed;
       bottom: 5%;
       right: 5%;
       height: 100px;
@@ -192,6 +223,51 @@
       height: 200px;
       width: 200px;
       margin-bottom: 20px;
+    }
+    
+    .blackMask{
+      position: fixed;
+      top: 0;
+      left: 0;
+      height: 100%;
+      width: 100%;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      background: rgba(0,0,0,.95)
+    }
+    .blackMask div{
+      border-radius: 5px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      background: white;
+      padding: 20px;
+    }
+    .blackMask input{
+      height: 35px;
+      width: 280px;
+      padding: 0 10px;
+      border-radius: 3px;
+      border:1px solid #b6b6b6;
+      font-size: 16px;
+      line-height: 35px;
+      outline: none; 
+    }
+    .blackMask button{
+      height: 35px;
+      width: 95px;
+      border-radius: 7px;
+      background: #D00;
+      font-size: 16px;
+      line-height: 35px;
+      border: none;
+      color: white;
+      margin-left: 20px;
+      outline: none;
+    }
+    .blackMask button:hover{
+      opacity: .5;
     }
   </style>
 </html>

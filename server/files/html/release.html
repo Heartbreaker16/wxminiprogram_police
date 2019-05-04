@@ -10,167 +10,157 @@
   </head>
   <script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.min.js"></script>
   <script src="https://unpkg.com/axios/dist/axios.min.js"></script>
-  <body style="margin:0;">
-    <div id="app" class="container">
-      <div class="para-title">
-        <div></div>
-        新闻标题
+  <script src="basic.js"></script>
+  <body style='margin: 0;'>
+    <div id="app">
+      <div class='header'>警务后台管理系统</div>
+      <div class='edit-box'>
+        <div class="subtitle">新闻头图</div>
+        <input id='file' class="upload" @change="add_img" type="file" />
+        <div class="subtitle">标题</div>
+        <input v-model='title' class='title' placeholder='请输入新闻标题' maxlength="30">
+        <div class="subtitle">正文</div>
+        <textarea v-model='detail' class='content' placeholder='请输入新闻正文' maxlength="1000"></textarea>
+        <button @click='submit'>发布</button>
       </div>
-      <input v-model='title' maxlength="30"/>
-      <div class="para-title">
-        <div></div>
-        新闻头图
-      </div>
-      <input id='file' class="upload" @change="add_img" type="file" />
-      <div class="para-title">
-        <div></div>
-        新闻详情
-      </div>
-      <textarea rows="10" cols="200" v-model='detail' maxlength="1000"></textarea>
-      <div class="button" @click='submit'>发布</div>
-      <div style="height: 60px; width: 100%;"></div>
     </div>
   </body>
-
   <script>
     let img
     const app = new Vue({
       el: '#app',
       data: {
         title: '',
-        detail: '',
-        rootUrl: 'http://101.132.123.189/'
+        detail: ''
       },
       methods: {
-        add_img(event) {
-          img = event.target.files[0]
-        },
-        submit() {
-          if(this.title === '' || this.detail === ''){
-            alert('请将表单填写完整！')
-            return
+        add_img(e) {
+          const file = e.target.files[0]
+          if (!/\.(jpg|jpeg|png|JPG|PNG)$/.test(e.target.value)) {
+            alert('图片类型必须是jpeg,jpg,png中的一种')
+            document.getElementById('file').value = ''
+            return false
           }
-          const legalType = 'image/gif, image/jpeg, image/png, image/jpg'
-
-          if (legalType.indexOf(img.type) == -1) {
-            alert('请选择我们支持的图片格式！')
-            return
-          }
-          if (img.size > 3145728) {
+          if (file.size > 3145728) {
             alert('请选择3M以内的图片！')
+            document.getElementById('file').value = ''
             return
           }
-          axios
-            .post(`${this.rootUrl}addNews`, {
-              title: this.title,
-              detail: this.detail,
-              format: img.name.split('.').pop()
-            })
-            .then(res => {
-              const form = new FormData()
-              form.append('news', img, res.data[0].NSID + '.' + img.name.split('.').pop())
-              axios
-                .post(`${this.rootUrl}addNewsImg`, form)
-                .then(res => {
-                  if(res.data === 'ok'){
-                    alert('发布成功')
-                    this.title = ''
-                    this.detail = ''
-                    const file = document.getElementById('file')
-                    file.value = ''
-                    file.outerHTML = file.outerHTML
-                  }
-                })
-                .catch(error => {
-                  alert('上传图片出错！')
-                })
-            })
-            .catch(error => {
-              alert('上传出错！')
-            })
-        }
+          img = file
+        },
+        removeBlank(str){
+          return str.replace(/(^\s*)|(\s*$)/g, '')
+        },
+        submit(){
+          if(!img) { alert('新闻头图不能为空'); return}
+          const title = this.removeBlank(this.title)
+          if(!title) { alert('标题不能为空'); return}
+          const detail = this.removeBlank(this.detail)
+          if(!detail) { alert('新闻内容不能为空'); return}
+
+          if(confirm('确认要提交吗?'))
+            axios
+              .post(`${RootUrl}addNews`, {
+                title: this.title,
+                detail: this.detail,
+                format: img.name.split('.').pop()
+              })
+              .then(res => {
+                const form = new FormData()
+                form.append('news', img, res.data[0].NSID + '.' + img.name.split('.').pop())
+                axios
+                  .post(`${RootUrl}addNewsImg`, form)
+                  .then(res => {
+                    if(res.data === 'ok'){
+                      alert('发布成功')
+                      this.clear()
+                    }
+                  })
+                  .catch(error => {
+                    alert('上传图片出错！')
+                  })
+              })
+              .catch(error => {
+                alert('上传出错！')
+              })
+        
+        },
+        clear(){
+          this.title = ''
+          this.detail = ''
+          img = null
+          document.getElementById('file').value = ''
+        },
       },
-      mounted(){
-        this.title = ''
-        this.detail = ''
+      mounted() {
+        this.clear()
       }
     })
   </script>
   <style>
-    .container {
-      height: 100%;
-      width: 90%;
-      padding: 0 5%;
-    }
-    .container .para-title {
-      display: flex;
-      align-items: center;
-      font: bold 32px/100px false;
-      color: #424242;
-    }
-    .container .para-title div {
-      margin-right: 20px;
-      height: 45px;
-      width: 10px;
-      background: #011458;
-    }
-    .container .sub-info {
-      font: 30px/50px false;
-      display: flex;
-      align-items: flex-start;
-    }
-    .container .sub-info > div:nth-child(1) {
-      color: #808080;
-      width: 25%;
-    }
-    .container .sub-info > .div:nth-child(2) {
-      width: 75%;
-    }
-    .container .title {
-      font: bold 42px/70px false;
-      margin: 30px 0;
-    }
-    .container .info {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      font: 30px/50px false;
-      color: #808080;
-    }
-    .container .detail {
-      margin: 10px 0;
-      font: 32px/40px false;
-      text-align: justify;
-    }
-    .container .location {
-      font: 30px/80px false;
-      color: #e64340;
-    }
-    .container img {
-      margin: 0 20px;
-    }
-    input {
+    .header {
+      position: fixed;
+      top: 0;
+      left: 0;
       width: 100%;
-      height: 40px;
-      font: 20px/40px not specified;
-    }
-    textarea {
-      width: 100%;
-      font: 18px/40px not specified;
-    }
-    .button {
       height: 100px;
-      width: 250px;
-      font: 40px/100px not specified;
-      background: red;
-      border-radius: 10px;
-      margin-left: calc(50% - 125px);
-      margin-top: 50px;
       text-align: center;
+      font: bold 40px/100px not specified;
+      background: rgba(45, 45, 45, 0.98);
       color: white;
     }
-    .button:hover {
-      opacity: 0.5;
+    .edit-box {
+      width: 70%;
+      margin: 100px 15%;
+      display: flex;
+      flex-direction: column;
+    }
+    .edit-box .subtitle {
+      margin: 20px 0 10px 0;
+      font: bold 20px/40px not specified;
+      color: #333;
+    }
+    .edit-box input,
+    .edit-box textarea,
+    .edit-box button {
+      outline: none;
+    }
+    .edit-box .title {
+      border: 1px solid blue;
+      font-size: 18px;
+      line-height: 18px;
+      padding: 10px;
+      width: 100%;
+      border-radius: 6px;
+      height: 18px;
+    }
+    .edit-box .content {
+      border: 1px solid blue;
+      padding: 10px;
+      width: 100%;
+      border-radius: 6px;
+      height: 300px;
+      font: 18px/24px not specified;
+    }
+    .edit-box input {
+      height: 35px;
+      width: 180px;
+      border-radius: 3px;
+      border:1px solid #b6b6b6;
+      font-size: 16px;
+      line-height: 35px;
+      outline:none; 
+    }
+    .edit-box button {
+      height: 45px;
+      width: 95px;
+      border-radius: 7px;
+      background: blue;
+      font-size: 20px;
+      line-height: 45px;
+      border: none;
+      color: white;
+      margin-top: 30px;
     }
   </style>
 </html>

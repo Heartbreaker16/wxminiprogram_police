@@ -1,0 +1,189 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta http-equiv="X-UA-Compatible" content="ie=edge" />
+    <link rel="icon" href="/html/favicon.ico" type="image/x-icon" />
+    <link rel="shortcut icon" href="/html/favicon.ico" type="image/x-icon" />
+    <title>新闻管理</title>
+  </head>
+  <script src="https://cdn.bootcss.com/vue/2.5.17-beta.0/vue.min.js"></script>
+  <script src="https://unpkg.com/axios/dist/axios.min.js"></script>
+  <script src="basic.js"></script>
+  <body style="margin:0;">
+    <div id="app" class="container">
+    <div class='header'>警务后台管理系统</div>
+      <div class='news-box'>
+          <div class='news-item' v-for='(v,i) in news' :key='i'>
+            <img :src="RootUrl + v.img" style='object-fit: cover;'>
+            <div class='_main'>
+              <div>{{v.title}}</div>
+              <div class='overview'>{{v.detail}}</div>
+              <div class='foot'>
+                <div class='time'>{{v.time}}</div>
+              </div>
+            </div>
+            <button class='_link' @click="deleteNews(i)" style='margin-left:10px;'>删除</button>
+          </div>
+      </div>
+      <div style='height: 100px;width:100%;'></div>
+    <div class="bottom-btn caseHandle" @click="nav('list')">警务<br />管理</div>
+    <div class="bottom-btn releaseNews" @click="nav('release')">发布<br />新闻</div>
+    </div>
+  </body>
+  <script>
+    const app = new Vue({
+      el: '#app',
+      data: {
+        news:[],
+        rootUrl:''
+      },
+      methods: {
+        nav(page) {
+          window.open(`${page}.html`)
+        },
+        deleteNews(i){
+          if (confirm("确定要删除吗!"))
+            axios
+            .get(`${RootUrl}deleteNews?NSID=${this.news[i].NSID}`)
+            .then(res => {
+              if(res.data === 'ok') alert('删除成功')
+              this.getNews()
+            })
+            .catch(err => {
+              console.log(err)
+            })
+        },
+        getNews(){
+          axios
+            .get(`${RootUrl}allNews`)
+            .then(res => {
+              this.news = res.data
+              console.log(this.news);
+            })
+            .catch(err => {
+              console.log(err)
+            })
+        },
+        _login(){
+          axios
+            .post(`${RootUrl}login`,{password: this.password})
+            .then(res => {
+              if(res.data === 'ok') {
+                this.login = true
+              } else {
+                this.login = false
+                alert('登录失败')
+              }
+              this.password = ''
+            })
+            .catch(err => {
+              console.log(err)
+            })
+        }
+      },
+      mounted() {
+        this.rootUrl = RootUrl
+        this.getNews()
+      }
+    })
+  </script>
+<style>
+.header {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100px;
+  text-align: center;
+  font: bold 40px/100px not specified;
+  background: rgba(45, 45, 45, 0.98);
+  color: white;
+}
+.news-item{
+  width: 80%;
+  margin: 10px 10%;
+  display: flex;
+  align-items: center;
+  border-bottom: 1px solid #DDD;
+}
+.news-item img {
+  height: 120px;
+  width: 220px;
+  margin: 20px 20px 20px 0;
+}
+.news-box{
+  margin-top:120px;
+  width: 100%
+}
+.news-item ._main {
+  height: 120px;
+  width: 70%;
+  display: flex;
+  justify-content: space-between;
+  flex-direction: column;
+  font-size: 20px;
+  line-height: 20px;
+}
+.overview{
+  overflow: hidden;
+  text-overflow: ellipsis;
+  display: -webkit-box;
+  -webkit-line-clamp: 3;
+  -webkit-box-orient: vertical;
+  font-size: 15px;
+  line-height: 20px;
+  letter-spacing: 1px;
+  color: #555;
+}
+.foot{
+  height: 20px;
+  display: flex;
+  align-items: center;
+}
+.time{
+  font-size: 16px;
+  line-height: 18px;
+  color: #555;
+}
+.news-item ._link{
+  margin: 0 0 0 auto;
+  height: 35px;
+  width: 65px;
+  border-radius: 7px;
+  background: red;
+  margin: 20px;
+  border:none;
+  color:white;
+  outline:none;
+  font-size: 16px;
+  line-height: 16px;
+  cursor: default;
+}
+.news-item ._link:hover{
+  opacity: .5;
+}
+.bottom-btn {
+  position: fixed;
+  bottom: 5%;
+  height: 100px;
+  width: 100px;
+  border-radius: 50%;
+  color: white;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  box-shadow: 0 0 10px black;
+  font: 20px/30px not specified;
+}
+.releaseNews{
+  background: #007;
+  right: 5%;
+}
+.caseHandle{
+  background: rgba(45, 45, 45, 0.98);
+  right: 12%;
+}
+</style>
+</html>
