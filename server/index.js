@@ -53,18 +53,20 @@ const storage = multer.diskStorage({
     }
   }
 })
-const correctTime = (myDate, format = 'date') => {
+const beijingTime = timeObj => {
+  return new Date(
+    timeObj.getFullYear(),
+    timeObj.getMonth(),
+    timeObj.getDate(),
+    timeObj.getHours() + 8,
+    timeObj.getMinutes(),
+    timeObj.getSeconds()
+  )
+}
+const formatTime = (myDate, format = 'date') => {
   const twoNum = num => {
     return ('0' + num).slice(-2)
   }
-  // const myDate = new Date(
-  //   timeObj.getFullYear(),
-  //   timeObj.getMonth(),
-  //   timeObj.getDate(),
-  //   timeObj.getHours() + 8,
-  //   timeObj.getMinutes(),
-  //   timeObj.getSeconds()
-  // )
   switch (format) {
     case 'date':
       return `${myDate.getFullYear()}-${twoNum(myDate.getMonth() + 1)}-${twoNum(
@@ -80,8 +82,8 @@ const correctTime = (myDate, format = 'date') => {
 }
 const connectSQLConfig = {
   host: 'localhost',
-  user: 'root',
-  password: 'root',
+  user: 'newroot',
+  password: '123456',
   database: 'police',
   charset: 'utf8mb4'
 }
@@ -266,7 +268,7 @@ app.post('/handle', (req, response) => {
                       value: '已受理'
                     },
                     keyword5: {
-                      value: correctTime(new Date(), 'full')
+                      value: formatTime(beijingTime(new Date()), 'full')
                     }
                   }
                 }
@@ -296,7 +298,7 @@ app.get('/list', (req, res) => {
   `
   connection.query(SQL, (err, row) => {
     if (err) throw err
-    row.forEach(v => (v.time = correctTime(v.time)))
+    row.forEach(v => (v.time = formatTime(v.time)))
     res.send(row)
     connection.end()
   })
@@ -335,7 +337,7 @@ app.get('/listAll', (req, res) => {
   }
   connection.query(SQL, (err, row) => {
     if (err) throw err
-    row.forEach(v => (v.time = correctTime(v.time)))
+    row.forEach(v => (v.time = formatTime(v.time)))
     res.send(row)
     connection.end()
   })
@@ -384,7 +386,7 @@ app.get('/allNews', (req, res) => {
   connection.query(SQL, (err, row) => {
     if (err) throw err
     row.forEach(v => {
-      v.time = correctTime(v.time)
+      v.time = formatTime(v.time)
       v.img = `/news/${v.NSID}.${v.format}`
     })
     res.send(row)
@@ -404,7 +406,7 @@ app.get('/newsDetail', (req, res) => {
     if (err) throw err
     row.forEach(v => {
       v.detail = v.detail.replace(/[\n]+/g, '<br>')
-      v.time = correctTime(v.time, 'full')
+      v.time = formatTime(v.time, 'full')
       v.img = `/news/${v.NSID}.${v.format}`
     })
     res.send(row)
@@ -431,7 +433,7 @@ app.get('/caseDetail', (req, res) => {
   connection.query(SQL, (err, row) => {
     if (err) throw err
     let Obj = row[0]
-    Obj.time = correctTime(Obj.time, 'full')
+    Obj.time = formatTime(Obj.time, 'full')
     if (Obj.duration) {
       Obj.voiceFile = `/voice/${MSID}.aac`
     }
