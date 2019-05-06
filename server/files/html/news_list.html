@@ -24,7 +24,7 @@
                 <div class='time'>{{v.time}}</div>
               </div>
             </div>
-            <button class='_link' @click="deleteNews(i)" style='margin-left:10px;'>删除</button>
+            <button class='_link' @click="deleteNews(i)">删除</button>
           </div>
       </div>
       <div style='height: 100px;width:100%;'></div>
@@ -44,7 +44,7 @@
           window.open(`${page}.html`)
         },
         deleteNews(i){
-          if (confirm("确定要删除吗!"))
+          if (confirm("确定要删除吗?"))
             axios
             .get(`${RootUrl}deleteNews?NSID=${this.news[i].NSID}`)
             .then(res => {
@@ -102,8 +102,8 @@
   color: white;
 }
 .news-item{
-  width: 80%;
-  margin: 10px 10%;
+  width: 70%;
+  margin: 10px 15%;
   display: flex;
   align-items: center;
   border-bottom: 1px solid #DDD;
@@ -119,7 +119,7 @@
 }
 .news-item ._main {
   height: 120px;
-  width: 70%;
+  width: 60%;
   display: flex;
   justify-content: space-between;
   flex-direction: column;
@@ -153,7 +153,6 @@
   width: 65px;
   border-radius: 7px;
   background: red;
-  margin: 20px;
   border:none;
   color:white;
   outline:none;

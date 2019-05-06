@@ -379,7 +379,7 @@ app.get('/allNews', (req, res) => {
   connection.connect()
 
   const SQL = `
-    SELECT NSID, title, time, format
+    SELECT *
     FROM news
     ORDER BY time DESC
   `
