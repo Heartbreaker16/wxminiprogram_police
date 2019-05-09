@@ -53,16 +53,6 @@ const storage = multer.diskStorage({
     }
   }
 })
-const beijingTime = timeObj => {
-  return new Date(
-    timeObj.getFullYear(),
-    timeObj.getMonth(),
-    timeObj.getDate(),
-    timeObj.getHours() + 8,
-    timeObj.getMinutes(),
-    timeObj.getSeconds()
-  )
-}
 const formatTime = (myDate, format = 'date') => {
   const twoNum = num => {
     return ('0' + num).slice(-2)
@@ -80,12 +70,16 @@ const formatTime = (myDate, format = 'date') => {
       return myDate
   }
 }
-const connectSQLConfig = {
-  host: 'localhost',
-  user: 'newroot',
-  password: '123456',
-  database: 'police',
-  charset: 'utf8mb4'
+const connectMySQL = () => {
+  const connection = mysql.createConnection({
+    host: 'localhost',
+    user: 'newroot',
+    password: '123456',
+    database: 'police',
+    charset: 'utf8mb4'
+  })
+  connection.connect()
+  return connection
 }
 const upload = multer({ storage })
 
@@ -104,8 +98,7 @@ app.get('/', (req, res) => {
   })
 })
 app.post('/register', (req, res) => {
-  const connection = mysql.createConnection(connectSQLConfig)
-  connection.connect()
+  const connection = connectMySQL()
   const user = req.body
   let SQL = `
     SELECT *
@@ -131,8 +124,7 @@ app.post('/register', (req, res) => {
   })
 })
 app.post('/login', (req, res) => {
-  const connection = mysql.createConnection(connectSQLConfig)
-  connection.connect()
+  const connection = connectMySQL()
   const user = req.body
   const SQL = `
     SELECT name, USID
@@ -149,8 +141,7 @@ app.post('/login', (req, res) => {
   connection.end()
 })
 app.post('/adminLogin', (req, res) => {
-  const connection = mysql.createConnection(connectSQLConfig)
-  connection.connect()
+  const connection = connectMySQL()
   const SQL = 'SELECT * FROM admin_password'
   connection.query(SQL, (err, row) => {
     if (err) throw err
@@ -160,8 +151,7 @@ app.post('/adminLogin', (req, res) => {
   })
 })
 app.post('/addMsg', (req, res) => {
-  const connection = mysql.createConnection(connectSQLConfig)
-  connection.connect()
+  const connection = connectMySQL()
   const message = req.body
   const SQL = message.title
     ? `
@@ -185,8 +175,7 @@ app.post('/addMsg', (req, res) => {
   })
 })
 app.post('/addVoice', upload.single('voice'), (req, res, next) => {
-  const connection = mysql.createConnection(connectSQLConfig)
-  connection.connect()
+  const connection = connectMySQL()
   const data = req.body
   const SQL = `
     UPDATE messages
@@ -203,8 +192,7 @@ app.post('/addImg', upload.single('case'), (req, res, next) => {
   res.send('ok')
 })
 app.get('/allTypes', (req, res) => {
-  const connection = mysql.createConnection(connectSQLConfig)
-  connection.connect()
+  const connection = connectMySQL()
   const SQL = `
     SELECT type,TPID
     FROM types
@@ -218,8 +206,7 @@ app.get('/allTypes', (req, res) => {
   })
 })
 app.post('/handle', (req, response) => {
-  const connection = mysql.createConnection(connectSQLConfig)
-  connection.connect()
+  const connection = connectMySQL()
   const data = req.body
   let SQL
   if (data.password === 'police') {
@@ -268,7 +255,7 @@ app.post('/handle', (req, response) => {
                       value: '已受理'
                     },
                     keyword5: {
-                      value: formatTime(beijingTime(new Date()), 'full')
+                      value: formatTime(new Date(), 'full')
                     }
                   }
                 }
@@ -286,8 +273,7 @@ app.post('/handle', (req, response) => {
   }
 })
 app.get('/list', (req, res) => {
-  const connection = mysql.createConnection(connectSQLConfig)
-  connection.connect()
+  const connection = connectMySQL()
   const USID = req.query.id
 
   const SQL = `
@@ -304,8 +290,7 @@ app.get('/list', (req, res) => {
   })
 })
 app.get('/listAll', (req, res) => {
-  const connection = mysql.createConnection(connectSQLConfig)
-  connection.connect()
+  const connection = connectMySQL()
 
   const TPID = parseInt(req.query.TPID)
   let SQL
@@ -343,8 +328,7 @@ app.get('/listAll', (req, res) => {
   })
 })
 app.post('/addNews', (req, res) => {
-  const connection = mysql.createConnection(connectSQLConfig)
-  connection.connect()
+  const connection = connectMySQL()
   const news = req.body
   const SQL = `
       INSERT INTO news(title,detail,format)
@@ -362,21 +346,20 @@ app.post('/addNewsImg', upload.single('news'), (req, res) => {
   res.send('ok')
 })
 app.get('/deleteNews', (req, res) => {
-  const connection = mysql.createConnection(connectSQLConfig)
-  connection.connect()
+  const connection = connectMySQL()
   const SQL = `
     DELETE FROM news
     WHERE NSID = ${req.query.NSID}
   `
   connection.query(SQL, (err, row) => {
     if (err) throw err
+    fs.unlinkSync(`${FilePath}/news/${req.query.NSID}.${req.query.format}`)
     res.send('ok')
     connection.end()
   })
 })
 app.get('/allNews', (req, res) => {
-  const connection = mysql.createConnection(connectSQLConfig)
-  connection.connect()
+  const connection = connectMySQL()
 
   const SQL = `
     SELECT *
@@ -394,8 +377,7 @@ app.get('/allNews', (req, res) => {
   })
 })
 app.get('/newsDetail', (req, res) => {
-  const connection = mysql.createConnection(connectSQLConfig)
-  connection.connect()
+  const connection = connectMySQL()
 
   const SQL = `
     SELECT *
@@ -414,8 +396,7 @@ app.get('/newsDetail', (req, res) => {
   })
 })
 app.get('/caseDetail', (req, res) => {
-  const connection = mysql.createConnection(connectSQLConfig)
-  connection.connect()
+  const connection = connectMySQL()
   const MSID = req.query.MSID
 
   const SQL = req.query.full

@@ -46,7 +46,7 @@
         deleteNews(i){
           if (confirm("确定要删除吗?"))
             axios
-            .get(`${RootUrl}deleteNews?NSID=${this.news[i].NSID}`)
+            .get(`${RootUrl}deleteNews?NSID=${this.news[i].NSID}&format=${this.news[i].format}`)
             .then(res => {
               if(res.data === 'ok') alert('删除成功')
               this.getNews()

@@ -7,8 +7,7 @@ App.mpType = 'app'
 Vue.mixin({
   data() {
     return {
-      rootUrl: 'http://207.148.90.74/'
-      // rootUrl: 'http://47.92.247.229/'
+      rootUrl: 'http://101.132.123.189/'
     }
   }
 })
