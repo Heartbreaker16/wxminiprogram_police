@@ -2,7 +2,7 @@
 <div class='container'>
 <div class='title'>{{detailObj.title}}</div>
 <div class='time'>{{detailObj.time}}</div>
-<img v-show='imgHide' :src='rootUrl + detailObj.img' mode='widthFix' @load='imgHide=true'>
+<img v-if='detailObj.img' v-show='imgHide' :src='rootUrl + detailObj.img' mode='widthFix' @load='imgHide=true'>
 <rich-text class='detail' :nodes='detailObj.detail' space='emsp'/>
 <div style='height: 60rpx; width: 100%;' />
 </div>
